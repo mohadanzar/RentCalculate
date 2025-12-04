@@ -32,6 +32,8 @@ import {
   Download,
   Archive,
   FileText,
+  Home,
+  Calendar,
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -652,6 +654,63 @@ END:VCARD`
     })
   }
 
+  const handleHome = () => {
+    // Navigate to first page (login)
+    setCurrentStep("login")
+    toast({
+      title: "Home",
+      description: "Returned to login page",
+    })
+  }
+
+  const handleNewMonthCalculation = () => {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ]
+
+    // Advance to next month
+    let nextMonth = currentMonth + 1
+    let nextYear = currentYear
+
+    if (nextMonth > 11) {
+      nextMonth = 0
+      nextYear += 1
+    }
+
+    setCurrentMonth(nextMonth)
+    setCurrentYear(nextYear)
+
+    // Reset all bills for the new month
+    setRoom((prev) => ({
+      ...prev,
+      roommates: prev.roommates.map((roommate) => ({
+        ...roommate,
+        waterBillPaid: 0,
+        ebBillPaid: 0,
+        otherBillPaid: 0,
+      })),
+    }))
+
+    // Navigate to Room Setup page
+    setCurrentStep("room-setup")
+
+    toast({
+      title: "New Month Started",
+      description: `Reset bills and calculating for ${monthNames[nextMonth]} ${nextYear}`,
+    })
+  }
+
   if (currentStep === "login") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -930,6 +989,17 @@ END:VCARD`
                   <Button onClick={() => generatePDF()} variant="secondary" size="sm">
                     <FileText className="w-4 h-4 mr-1" />
                     PDF
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <Button onClick={handleHome} variant="outline" className="w-full">
+                    <Home className="w-4 h-4 mr-2" />
+                    Home
+                  </Button>
+                  <Button onClick={handleNewMonthCalculation} variant="outline" className="w-full">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    New Month
                   </Button>
                 </div>
 
